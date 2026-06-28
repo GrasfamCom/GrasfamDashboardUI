@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { generateRouteConfig } from './Components/Utils/RouteUtils';
 
@@ -18,6 +18,12 @@ function PathAwareRoutes() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const originalPushState = useRef(null);
   const originalReplaceState = useRef(null);
+
+  // Rebuild the route table from the current menu on every navigation. The menu
+  // can land in localStorage *after* this remote first mounts (e.g. the user
+  // clicked the sidebar before the menu API responded), so a frozen import-time
+  // config would miss routes that exist by the time the user navigates.
+  const routeConfig = useMemo(() => generateRouteConfig(), [currentPath]);
 
   const syncPath = useCallback(() => {
     setCurrentPath((prev) => {
@@ -66,23 +72,41 @@ function PathAwareRoutes() {
     };
   }, [syncPath]);
 
+  // Normalize a trailing slash so "/Dashboard/" matches the "/Dashboard" route.
+  const normalizedPath =
+    currentPath.length > 1 && currentPath.endsWith('/')
+      ? currentPath.slice(0, -1)
+      : currentPath;
+
   // Match current URL to configured routes
   const matchedRoute = routeConfig.routes.find((route) => {
     // Support exact match
-    if (route.path === currentPath) return true;
+    if (route.path === normalizedPath) return true;
     // Support wildcard suffix (e.g. /Dashboard/*)
     if (route.path.endsWith('/*')) {
       const base = route.path.slice(0, -2);
-      return currentPath === base || currentPath.startsWith(base + '/');
+      return normalizedPath === base || normalizedPath.startsWith(base + '/');
     }
     return false;
   });
+
+  // Unknown path, or the menu hasn't loaded yet → hand the user back to the host
+  // dashboard instead of a dead-end "Route not found" screen. We can't use
+  // <Navigate> here: react-router-dom is NOT a shared singleton across MFEs, so
+  // the host's Router context isn't visible to this remote. Drive the host's
+  // BrowserRouter via the history API + a popstate event instead.
+  useEffect(() => {
+    if (!matchedRoute && window.location.pathname !== '/dashboard') {
+      window.history.replaceState({}, '', '/dashboard');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+  }, [matchedRoute]);
 
   if (matchedRoute) {
     return matchedRoute.component;
   }
 
-  return <div>Route not found: {currentPath}</div>;
+  return null;
 }
 
 /**
