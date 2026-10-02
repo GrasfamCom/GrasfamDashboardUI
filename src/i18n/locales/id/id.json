@@ -1,0 +1,18 @@
+{
+  "overview.title": "Ringkasan Dasbor",
+  "overview.subscription": "Langganan",
+  "overview.noSubscription": "Belum ada paket aktif",
+  "overview.renews": "Diperpanjang {{date}}",
+  "overview.manage": "Kelola",
+  "overview.modules": "Modul",
+  "overview.sections": "{{count}} bagian",
+  "overview.recent": "Terakhir dibuka",
+  "menu.Quiz": "Kuis",
+  "menu.Academic": "Akademik",
+  "menu.Religion": "Keagamaan",
+  "menu.Attendance": "Kehadiran",
+  "menu.SubscriptionGroup": "Langganan",
+  "menu.Tools": "Alat",
+  "menu.AI": "AI",
+  "menu.PoS": "PoS"
+}

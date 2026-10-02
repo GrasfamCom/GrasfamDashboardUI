@@ -1,0 +1,18 @@
+{
+  "overview.title": "Dashboard Overview",
+  "overview.subscription": "Subscription",
+  "overview.noSubscription": "No active plan",
+  "overview.renews": "Renews {{date}}",
+  "overview.manage": "Manage",
+  "overview.modules": "Modules",
+  "overview.sections": "{{count}} sections",
+  "overview.recent": "Recent",
+  "menu.Quiz": "Quiz",
+  "menu.Academic": "Academic",
+  "menu.Religion": "Religion",
+  "menu.Attendance": "Attendance",
+  "menu.SubscriptionGroup": "Subscription",
+  "menu.Tools": "Tools",
+  "menu.AI": "AI",
+  "menu.PoS": "PoS"
+}
