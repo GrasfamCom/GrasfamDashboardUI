@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { API_URL } from '../../../config/envConfig';
 import { useTranslation } from '../../../i18n/context';
+import FirstWeekChecklist from './FirstWeekChecklist';
 
 // The desktop twin of the host's mobile home (MobileHome.jsx): subscriptions, module
 // tiles and the recently opened pages. Colours and the recent list are the host's own
@@ -102,6 +103,8 @@ const Overview = () => {
   return (
     <div className="relative">
       <h6 className="text-2xl font-semibold text-center">{t('overview.title')}</h6>
+
+      {signedIn && <FirstWeekChecklist menu={modules} onNavigate={navigate} firstLeaf={firstLeaf} />}
 
       {signedIn && (
       <div className="mt-6 rounded-2xl text-white p-5 shadow-lg" style={{ background: BRAND_GRADIENT }}>
