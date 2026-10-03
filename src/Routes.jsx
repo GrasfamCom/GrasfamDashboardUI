@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { generateRouteConfig } from './Components/Utils/RouteUtils';
 
@@ -23,7 +23,7 @@ function PathAwareRoutes() {
   // can land in localStorage *after* this remote first mounts (e.g. the user
   // clicked the sidebar before the menu API responded), so a frozen import-time
   // config would miss routes that exist by the time the user navigates.
-  const routeConfig = useMemo(() => generateRouteConfig(), [currentPath]);
+  const routeConfig = generateRouteConfig();
 
   const syncPath = useCallback(() => {
     setCurrentPath((prev) => {
