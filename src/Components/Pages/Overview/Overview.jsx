@@ -165,7 +165,7 @@ const Overview = () => {
               </span>
               <p className="mt-3 font-semibold text-gray-900">{moduleLabel(node)}</p>
               {node.children.length > 0 && (
-                <p className="text-xs text-gray-400">{t('overview.sections', { count: node.children.length })}</p>
+                <p className="text-xs text-gray-400">{t(node.children.length === 1 ? 'overview.section' : 'overview.sections', { count: node.children.length })}</p>
               )}
             </button>
           );

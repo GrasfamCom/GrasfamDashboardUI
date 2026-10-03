@@ -5,6 +5,7 @@
   "overview.renews": "Diperpanjang {{date}}",
   "overview.manage": "Kelola",
   "overview.modules": "Modul",
+  "overview.section": "{{count}} bagian",
   "overview.sections": "{{count}} bagian",
   "overview.recent": "Terakhir dibuka",
   "overview.checklistTitle": "Mulai: minggu pertama Anda",

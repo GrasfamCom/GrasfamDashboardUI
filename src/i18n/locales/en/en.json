@@ -5,6 +5,7 @@
   "overview.renews": "Renews {{date}}",
   "overview.manage": "Manage",
   "overview.modules": "Modules",
+  "overview.section": "{{count}} section",
   "overview.sections": "{{count}} sections",
   "overview.recent": "Recent",
   "overview.checklistTitle": "Get started: your first week",
