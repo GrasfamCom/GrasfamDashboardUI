@@ -23,6 +23,7 @@ const findNode = (nodes, names) => {
   return names.length === 1 ? node : findNode(node.children, names.slice(1));
 };
 
+// `menu` is the whole menu tree, not the tile list: the team page lives under Account, which has no tile.
 // Each step needs its page in the menu (= the module is subscribed, or the role may use it)
 // and a question the existing APIs can answer. `isDone` reads the rows the API returned.
 const STEPS = [
@@ -30,8 +31,8 @@ const STEPS = [
     key: 'Teachers',
     menu: ['Account', 'TeamMembers'],
     done: () => get('/api/v1/host/team/members'),
-    // The admin is the first member: a second person means the team has started.
-    isDone: (rows) => rows.length > 1,
+    // The owner is the first member: anyone who is not an owner means the team has started.
+    isDone: (rows) => rows.some((member) => !member.IsOwner),
   },
   {
     key: 'Learners',

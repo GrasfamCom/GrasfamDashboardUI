@@ -70,7 +70,8 @@ const navigate = (path) => {
 const Overview = () => {
   const { t, lang } = useTranslation();
   const [subscriptions, setSubscriptions] = useState(null);
-  const modules = readMenuTree().filter((node) => !HIDDEN.includes(node.name));
+  const fullMenu = readMenuTree();
+  const modules = fullMenu.filter((node) => !HIDDEN.includes(node.name));
   const subscriptionGroup = modules.find((node) => node.name === 'SubscriptionGroup');
   const recent = readRecent();
   const signedIn = Boolean(Cookies.get('token'));
@@ -104,7 +105,7 @@ const Overview = () => {
     <div className="relative">
       <h6 className="text-2xl font-semibold text-center">{t('overview.title')}</h6>
 
-      {signedIn && <FirstWeekChecklist menu={modules} onNavigate={navigate} firstLeaf={firstLeaf} />}
+      {signedIn && <FirstWeekChecklist menu={fullMenu} onNavigate={navigate} firstLeaf={firstLeaf} />}
 
       {signedIn && (
       <div className="mt-6 rounded-2xl text-white p-5 shadow-lg" style={{ background: BRAND_GRADIENT }}>
