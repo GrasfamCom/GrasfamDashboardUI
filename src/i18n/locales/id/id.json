@@ -14,6 +14,8 @@
   "overview.stepRollCall": "Isi absensi pertama",
   "overview.stepRollCallHint": "Semua otomatis Hadir; tandai yang tidak hadir saja.",
   "overview.stepOpen": "Buka",
+  "overview.stepTeachers": "Tambahkan guru Anda",
+  "overview.stepTeachersHint": "Undang staf lewat email. Mereka membuat kata sandi sendiri.",
   "menu.Quiz": "Kuis",
   "menu.Academic": "Akademik",
   "menu.Religion": "Keagamaan",

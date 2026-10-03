@@ -14,6 +14,8 @@
   "overview.stepRollCall": "Take your first roll call",
   "overview.stepRollCallHint": "Everyone starts as Hadir; mark only who is absent.",
   "overview.stepOpen": "Open",
+  "overview.stepTeachers": "Add your teachers",
+  "overview.stepTeachersHint": "Invite staff by email. They set their own password.",
   "menu.Quiz": "Quiz",
   "menu.Academic": "Academic",
   "menu.Religion": "Religion",

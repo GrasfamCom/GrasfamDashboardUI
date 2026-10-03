@@ -23,18 +23,27 @@ const findNode = (nodes, names) => {
   return names.length === 1 ? node : findNode(node.children, names.slice(1));
 };
 
-// Each step needs its module in the menu (= subscribed) and a question the existing APIs
-// can answer. "Add your teachers" joins once the staff invite page exists (G-18).
+// Each step needs its page in the menu (= the module is subscribed, or the role may use it)
+// and a question the existing APIs can answer. `isDone` reads the rows the API returned.
 const STEPS = [
+  {
+    key: 'Teachers',
+    menu: ['Account', 'TeamMembers'],
+    done: () => get('/api/v1/host/team/members'),
+    // The admin is the first member: a second person means the team has started.
+    isDone: (rows) => rows.length > 1,
+  },
   {
     key: 'Learners',
     menu: ['Academic', 'Records', 'Student'],
     done: () => get('/api/v1/academic/student', { Page: 1, PerPage: 1 }),
+    isDone: (rows) => rows.length > 0,
   },
   {
     key: 'RollCall',
     menu: ['Attendance', 'RollCall'],
     done: () => get('/api/v1/attendance/rollcall/records', { page: 1, perPage: 1 }),
+    isDone: (rows) => rows.length > 0,
   },
 ];
 
@@ -53,8 +62,12 @@ const FirstWeekChecklist = ({ menu, onNavigate, firstLeaf }) => {
     get('/api/v1/host/account/profile')
       .then(async (profile) => {
         if (!ADMIN_ROLES.includes(profile?.role)) return [];
-        const answers = await Promise.all(available.map((step) => step.done()));
-        return available.map((step, index) => ({ ...step, complete: rowsOf(answers[index]).length > 0 }));
+        // A step whose question cannot be answered (a role the API refuses) is left out, not shown wrong.
+        const answers = await Promise.allSettled(available.map((step) => step.done()));
+        return available
+          .map((step, index) => ({ ...step, answer: answers[index] }))
+          .filter((step) => step.answer.status === 'fulfilled')
+          .map((step) => ({ ...step, complete: step.isDone(rowsOf(step.answer.value)) }));
       })
       .catch(() => [])
       .then((result) => {
