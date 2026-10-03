@@ -4,7 +4,7 @@ import { API_URL } from '../../../config/envConfig';
 import { useTranslation } from '../../../i18n/context';
 import FirstWeekChecklist from './FirstWeekChecklist';
 import TodayStrip from './TodayStrip';
-import { firstLeaf } from './menuUtils';
+import { firstLeaf, formatDay, menuLabel } from './menuUtils';
 
 // The desktop twin of the host's mobile home (MobileHome.jsx): subscriptions, module
 // tiles and the recently opened pages. Colours and the recent list are the host's own
@@ -100,15 +100,9 @@ const Overview = () => {
     return () => controller.abort();
   }, [signedIn]);
 
-  const moduleLabel = (node) => {
-    const key = `menu.${node.name}`;
-    const text = t(key);
-    return text === key ? node.label : text;
-  };
+  const moduleLabel = (node) => menuLabel(t, node);
   const endDate = (s) =>
-    s.EndDate && !s.IsLifetime && !s.EndDate.startsWith('9999')
-      ? new Date(s.EndDate).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB')
-      : null;
+    s.EndDate && !s.IsLifetime && !s.EndDate.startsWith('9999') ? formatDay(s.EndDate, lang) : null;
 
   const subscriptionCard = signedIn && (
     <div className="mt-6 rounded-2xl text-white p-5 shadow-lg" style={{ background: BRAND_GRADIENT }}>

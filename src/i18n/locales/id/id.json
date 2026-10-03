@@ -46,5 +46,11 @@
   "overview.todayError": "Angka hari ini gagal dimuat",
   "overview.todayErrorHint": "Bagian lain dasbor tetap berjalan.",
   "overview.tryAgain": "Coba lagi",
-  "overview.recentEmpty": "Halaman yang Anda buka akan muncul di sini."
+  "overview.recentEmpty": "Halaman yang Anda buka akan muncul di sini.",
+  "overview.classOne": "{{n}} kelas",
+  "overview.classesDoneOne": "{{done}} dari {{total}} kelas selesai",
+  "overview.classLearnerOne": "{{n}} siswa",
+  "menu.RollCall": "Absensi",
+  "menu.Records": "Data",
+  "menu.Student": "Siswa"
 }

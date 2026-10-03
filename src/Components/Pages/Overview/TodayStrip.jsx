@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { API_URL } from '../../../config/envConfig';
 import { useTranslation } from '../../../i18n/context';
-import { findPath, firstLeaf } from './menuUtils';
+import { findPath, firstLeaf, menuLabel } from './menuUtils';
 
 // "Today": the numbers a school admin opens the dashboard for. They come from one call
 // (dashboard/overview), counts only. Each card is `ok`, `unavailable` (shown as a dash)
@@ -115,7 +115,7 @@ const TodayStrip = ({ menu, onNavigate }) => {
   const linkTo = (names, text) => {
     const path = findPath(menu, names);
     if (!path) return null;
-    return { text: text ?? path.map((node) => node.label).join(' › '), onClick: () => onNavigate(firstLeaf(path[path.length - 1])) };
+    return { text: text ?? path.map((node) => menuLabel(t, node)).join(' › '), onClick: () => onNavigate(firstLeaf(path[path.length - 1])) };
   };
   const rollCallLink = (done) => linkTo(['Attendance', 'RollCall'], done ? undefined : t('overview.takeRollCall'));
 
@@ -132,7 +132,7 @@ const TodayStrip = ({ menu, onNavigate }) => {
           key="learners"
           label={t('overview.learners')}
           value={ok ? learners.Learners : DASH}
-          sub={ok ? (learners.Learners === 0 ? t('overview.noLearners') : t('overview.classes', { n: learners.Classes })) : null}
+          sub={ok ? (learners.Learners === 0 ? t('overview.noLearners') : t(learners.Classes === 1 ? 'overview.classOne' : 'overview.classes', { n: learners.Classes })) : null}
           color={COLORS.learners}
           link={ok ? linkTo(['Academic', 'Records', 'Student'], learners.Learners === 0 ? t('overview.addLearners') : undefined) : null}
         />,
@@ -146,7 +146,7 @@ const TodayStrip = ({ menu, onNavigate }) => {
       if (done) {
         sub = [
           t('overview.absentBreakdown', { sick: absent.Sick, excused: absent.Excused, unexcused: absent.Unexcused }),
-          t('overview.classesDone', { done: absent.ClassesDone, total: absent.ClassesTotal }),
+          t(absent.ClassesTotal === 1 ? 'overview.classesDoneOne' : 'overview.classesDone', { done: absent.ClassesDone, total: absent.ClassesTotal }),
         ].join(' · ');
       } else if (ok) {
         sub = t('overview.noRollCall');
@@ -186,7 +186,7 @@ const TodayStrip = ({ menu, onNavigate }) => {
         key="myClass"
         label={t('overview.myClass')}
         value={ok ? home.ClassName : DASH}
-        sub={ok ? `${t('overview.classLearners', { n: home.Learners })} · ${t(home.RollCallTaken ? 'overview.rollCallTaken' : 'overview.rollCallNotTaken')}` : null}
+        sub={ok ? `${t(home.Learners === 1 ? 'overview.classLearnerOne' : 'overview.classLearners', { n: home.Learners })} · ${t(home.RollCallTaken ? 'overview.rollCallTaken' : 'overview.rollCallNotTaken')}` : null}
         color={COLORS.myClass}
         link={ok ? rollCallLink(home.RollCallTaken) : null}
       />,

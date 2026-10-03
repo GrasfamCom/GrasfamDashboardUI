@@ -46,5 +46,11 @@
   "overview.todayError": "Today figures could not load",
   "overview.todayErrorHint": "The rest of your dashboard is fine.",
   "overview.tryAgain": "Try again",
-  "overview.recentEmpty": "Pages you open will show up here."
+  "overview.recentEmpty": "Pages you open will show up here.",
+  "overview.classOne": "{{n}} class",
+  "overview.classesDoneOne": "{{done}} of {{total}} class done",
+  "overview.classLearnerOne": "{{n}} learner",
+  "menu.RollCall": "Roll Call",
+  "menu.Records": "Records",
+  "menu.Student": "Student"
 }
