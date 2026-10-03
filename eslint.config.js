@@ -57,6 +57,8 @@ export default [
     rules: {
       // ESLint Core Rules
       ...js.configs.recommended.rules,
+      // A const read in the same scope before its declaration crashes the production build (TDZ).
+      'no-use-before-define': ['error', { variables: false, functions: false, classes: true }],
 
       // React Rules
       ...react.configs.recommended.rules,
