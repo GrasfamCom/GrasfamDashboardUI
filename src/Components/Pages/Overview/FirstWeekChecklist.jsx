@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { API_URL } from '../../../config/envConfig';
 import { useTranslation } from '../../../i18n/context';
+import { findNode } from './menuUtils';
 
 const ADMIN_ROLES = ['Super Admin', 'Administrator'];
 
@@ -16,12 +17,6 @@ const get = async (path, params = {}) => {
 
 // The list behind a response, whichever casing the API used; only its length matters.
 const rowsOf = (body) => (Array.isArray(body) ? body : body?.data || body?.Data || []);
-
-const findNode = (nodes, names) => {
-  const node = nodes.find((candidate) => candidate.name === names[0]);
-  if (!node) return null;
-  return names.length === 1 ? node : findNode(node.children, names.slice(1));
-};
 
 // `menu` is the whole menu tree, not the tile list: the team page lives under Account, which has no tile.
 // Each step needs its page in the menu (= the module is subscribed, or the role may use it)
@@ -77,9 +72,7 @@ const FirstWeekChecklist = ({ menu, onNavigate, firstLeaf }) => {
     return () => {
       cancelled = true;
     };
-    // The menu is read once per page load, like the rest of the Overview.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [menu]);
 
   if (!steps || steps.length === 0 || steps.every((step) => step.complete)) return null;
   const doneCount = steps.filter((step) => step.complete).length;

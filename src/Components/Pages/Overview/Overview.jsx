@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Cookies from 'js-cookie';
 import { API_URL } from '../../../config/envConfig';
 import { useTranslation } from '../../../i18n/context';
 import FirstWeekChecklist from './FirstWeekChecklist';
+import TodayStrip from './TodayStrip';
+import { firstLeaf } from './menuUtils';
 
 // The desktop twin of the host's mobile home (MobileHome.jsx): subscriptions, module
 // tiles and the recently opened pages. Colours and the recent list are the host's own
@@ -65,8 +67,6 @@ const readMenuTree = () => {
   return build(null, '');
 };
 
-const firstLeaf = (node) => (node.children.length ? firstLeaf(node.children[0]) : node.path);
-
 /** Moves the host to another page; a remote cannot use the host's router. */
 const navigate = (path) => {
   window.history.pushState({}, '', path);
@@ -76,11 +76,14 @@ const navigate = (path) => {
 const Overview = () => {
   const { t, lang } = useTranslation();
   const [subscriptions, setSubscriptions] = useState(null);
-  const fullMenu = readMenuTree();
+  // Read once per page load; the checklist and the strip depend on it staying the same object.
+  const fullMenu = useMemo(readMenuTree, []);
   const modules = fullMenu.filter((node) => !HIDDEN.includes(node.name));
   const subscriptionGroup = modules.find((node) => node.name === 'SubscriptionGroup');
   const recent = readRecent();
   const signedIn = Boolean(Cookies.get('token'));
+  // School people (Academic or Attendance in the menu) get the Today strip and the Recent column.
+  const hasSchoolModules = fullMenu.some((node) => ['Academic', 'Attendance'].includes(node.name));
 
   useEffect(() => {
     if (!signedIn) return undefined;
@@ -107,47 +110,44 @@ const Overview = () => {
       ? new Date(s.EndDate).toLocaleDateString(lang === 'id' ? 'id-ID' : 'en-GB')
       : null;
 
-  return (
-    <div className="relative">
-      <h6 className="text-2xl font-semibold text-center">{t('overview.title')}</h6>
-
-      {signedIn && <FirstWeekChecklist menu={fullMenu} onNavigate={navigate} firstLeaf={firstLeaf} />}
-
-      {signedIn && (
-      <div className="mt-6 rounded-2xl text-white p-5 shadow-lg" style={{ background: BRAND_GRADIENT }}>
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-xs uppercase tracking-wide opacity-80">{t('overview.subscription')}</p>
-            {subscriptions === null ? (
-              <p className="mt-1 h-6 w-48 rounded bg-white/30 animate-pulse" />
-            ) : subscriptions.length === 0 ? (
-              <p className="text-lg font-bold">{t('overview.noSubscription')}</p>
-            ) : (
-              <ul className="mt-1 space-y-1">
-                {subscriptions.map((s) => (
-                  <li key={s.Id} className="flex flex-wrap items-baseline gap-x-3">
-                    <span className="text-lg font-bold">{`${s.PlanName} · ${s.Status}`}</span>
-                    {endDate(s) && <span className="text-sm opacity-90">{t('overview.renews', { date: endDate(s) })}</span>}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          {subscriptionGroup && (
-            <button
-              type="button"
-              onClick={() => navigate(firstLeaf(subscriptionGroup))}
-              className="shrink-0 bg-white/25 hover:bg-white/35 px-4 py-1.5 rounded-full text-sm font-semibold"
-            >
-              {t('overview.manage')}
-            </button>
+  const subscriptionCard = signedIn && (
+    <div className="mt-6 rounded-2xl text-white p-5 shadow-lg" style={{ background: BRAND_GRADIENT }}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-xs uppercase tracking-wide opacity-80">{t('overview.subscription')}</p>
+          {subscriptions === null ? (
+            <p className="mt-1 h-6 w-48 rounded bg-white/30 animate-pulse" />
+          ) : subscriptions.length === 0 ? (
+            <p className="text-lg font-bold">{t('overview.noSubscription')}</p>
+          ) : (
+            <ul className="mt-1 space-y-1">
+              {subscriptions.map((s) => (
+                <li key={s.Id} className="flex flex-wrap items-baseline gap-x-3">
+                  <span className="text-lg font-bold">{`${s.PlanName} · ${s.Status}`}</span>
+                  {endDate(s) && <span className="text-sm opacity-90">{t('overview.renews', { date: endDate(s) })}</span>}
+                </li>
+              ))}
+            </ul>
           )}
         </div>
+        {subscriptionGroup && (
+          <button
+            type="button"
+            onClick={() => navigate(firstLeaf(subscriptionGroup))}
+            className="shrink-0 bg-white/25 hover:bg-white/35 px-4 py-1.5 rounded-full text-sm font-semibold"
+          >
+            {t('overview.manage')}
+          </button>
+        )}
       </div>
-      )}
+    </div>
+  );
 
+  // Three tiles per row beside the Recent column, five per row across the full width.
+  const tiles = (
+    <>
       <h3 className="mt-6 mb-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('overview.modules')}</h3>
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className={`grid grid-cols-2 md:grid-cols-3 gap-4 ${hasSchoolModules ? '' : 'xl:grid-cols-5'}`}>
         {modules.map((node) => {
           const color = moduleColor(node.path);
           return (
@@ -171,34 +171,71 @@ const Overview = () => {
           );
         })}
       </div>
+    </>
+  );
 
-      {recent.length > 0 && (
-        <>
-          <h3 className="mt-6 mb-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('overview.recent')}</h3>
-          <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
-            {recent.map((entry) => {
-              const color = moduleColor(entry.path);
-              return (
-                <button
-                  key={entry.path}
-                  type="button"
-                  onClick={() => navigate(entry.path)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-gray-100 last:border-0 hover:bg-gray-50"
-                >
-                  <span
-                    className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold"
-                    style={{ background: tint(color), color }}
-                  >
-                    {initials(entry.label)}
-                  </span>
-                  <span className="flex-1 min-w-0">
-                    <span className="block text-gray-800 truncate">{entry.label}</span>
-                    <span className="block text-xs text-gray-400">{entry.path.split('/').filter(Boolean)[0]}</span>
-                  </span>
-                </button>
-              );
-            })}
+  const recentList = (
+    <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-900/5 overflow-hidden">
+      {recent.map((entry) => {
+        const color = moduleColor(entry.path);
+        return (
+          <button
+            key={entry.path}
+            type="button"
+            onClick={() => navigate(entry.path)}
+            className="w-full flex items-center gap-3 px-4 py-3 text-left border-b border-gray-100 last:border-0 hover:bg-gray-50"
+          >
+            <span
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold"
+              style={{ background: tint(color), color }}
+            >
+              {initials(entry.label)}
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block text-gray-800 truncate">{entry.label}</span>
+              <span className="block text-xs text-gray-400">{entry.path.split('/').filter(Boolean)[0]}</span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+  const recentHeading = (
+    <h3 className="mt-6 mb-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('overview.recent')}</h3>
+  );
+
+  return (
+    <div className="relative">
+      <h6 className="text-2xl font-semibold">{t('overview.title')}</h6>
+
+      {signedIn && <FirstWeekChecklist menu={fullMenu} onNavigate={navigate} firstLeaf={firstLeaf} />}
+      {signedIn && hasSchoolModules && <TodayStrip menu={fullMenu} onNavigate={navigate} />}
+
+      {hasSchoolModules ? (
+        <div className="xl:grid xl:grid-cols-3 xl:gap-6">
+          <div className="xl:col-span-2">
+            {subscriptionCard}
+            {tiles}
           </div>
+          <div>
+            {recentHeading}
+            {recent.length === 0 ? (
+              <p className="rounded-2xl bg-white p-4 text-sm text-gray-500 shadow-sm ring-1 ring-slate-900/5">{t('overview.recentEmpty')}</p>
+            ) : (
+              recentList
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          {subscriptionCard}
+          {tiles}
+          {recent.length > 0 && (
+            <>
+              {recentHeading}
+              {recentList}
+            </>
+          )}
         </>
       )}
     </div>
