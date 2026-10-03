@@ -55,7 +55,10 @@ const FirstWeekChecklist = ({ menu, onNavigate, firstLeaf }) => {
     let cancelled = false;
     const available = STEPS.map((step) => ({ ...step, node: findNode(menu, step.menu) })).filter((step) => step.node);
     if (available.length === 0) return undefined;
-    get('/api/v1/host/account/profile')
+    // Reuse the profile call the Host header just made (window.__grasfamProfile, 30 s) so a load sends one request.
+    const held = window.__grasfamProfile;
+    const reused = held && Date.now() - held.at < 30000;
+    (reused ? held.promise.then(({ data }) => data) : get('/api/v1/host/account/profile'))
       .then(async (profile) => {
         if (!ADMIN_ROLES.includes(profile?.role)) return [];
         // A step whose question cannot be answered (a role the API refuses) is left out, not shown wrong.
