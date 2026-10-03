@@ -40,19 +40,25 @@ const TodayStrip = ({ menu, onNavigate }) => {
   // loading | none (nothing to show) | failed | ok
   const [state, setState] = useState({ status: 'loading', data: null });
 
-  const load = useCallback((signal) => {
-    fetch(`${API_URL}/api/v1/dashboard/overview`, {
-      headers: { Authorization: `Bearer ${Cookies.get('token')}` },
-      signal,
-    })
-      .then(async (response) => {
-        // 403: this person has no strip. Anything else that is not a success: say so, and offer to try again.
-        if (response.status === 403) return { status: 'none', data: null };
-        if (!response.ok) return { status: 'failed', data: null };
-        const data = await response.json();
+  // `shared`: on first load, reuse the call the Host's phone home just made (window.__grasfamOverview,
+  // 30 s), so opening the phone dashboard sends one request, not two.
+  const load = useCallback((signal, shared) => {
+    const held = shared ? window.__grasfamOverview : null;
+    const reused = held && Date.now() - held.at < 30000;
+    (reused
+      ? held.promise
+      : fetch(`${API_URL}/api/v1/dashboard/overview`, {
+          headers: { Authorization: `Bearer ${Cookies.get('token')}` },
+          signal,
+        }).then(async (response) => ({ status: response.status, data: response.ok ? await response.json() : null }))
+    )
+      // 403: this person has no strip. Anything else that is not a success: say so, and offer to try again.
+      .catch(() => ({ status: 0, data: null }))
+      .then(({ status, data }) => {
+        if (status === 403) return { status: 'none', data: null };
+        if (status < 200 || status >= 300) return { status: 'failed', data: null };
         return data?.Scope === 'company' || data?.Scope === 'homeroom' ? { status: 'ok', data } : { status: 'none', data: null };
       })
-      .catch(() => ({ status: 'failed', data: null }))
       .then((next) => {
         if (!signal?.aborted) setState(next);
       });
@@ -60,11 +66,11 @@ const TodayStrip = ({ menu, onNavigate }) => {
 
   useEffect(() => {
     let controller = new AbortController();
-    load(controller.signal);
+    load(controller.signal, true);
     const refresh = () => {
       controller.abort();
       controller = new AbortController();
-      load(controller.signal);
+      load(controller.signal, false);
     };
     window.addEventListener('focus', refresh);
     return () => {
@@ -75,7 +81,7 @@ const TodayStrip = ({ menu, onNavigate }) => {
 
   const retry = () => {
     setState({ status: 'loading', data: null });
-    load(undefined);
+    load(undefined, false);
   };
 
   if (state.status === 'none') return null;
