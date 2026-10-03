@@ -1,13 +1,13 @@
 import { findMenuByPath } from "../../config/dashboardMenuConfig";
-import Cookies from "js-cookie";
+import { getModuleMenu } from '../Utils/moduleMenu';
 
 /**
- * Derives the current user's role from the Dashboard cookie.
+ * Derives the current user's role from the Dashboard menu.
  *
  * @returns {"Guest"|"User"|"Admin"|"MasterAdmin"}
  */
 export const deriveUserRole = () => {
-  const dashboardCookie = Cookies.get("Dashboard");
+  const dashboardCookie = getModuleMenu("Dashboard");
   if (!dashboardCookie) return "Guest";
 
   try {

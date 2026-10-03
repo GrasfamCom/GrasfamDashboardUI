@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie';
+import { getModuleMenu } from './moduleMenu';
 import { getComponentByName } from './ComponentUtils';
 
 /**
@@ -16,7 +16,7 @@ const PUBLIC_ROUTES = [
 
 export function generateRouteConfig() {
   const rootMenuName = 'Dashboard';
-  const dashboard = Cookies.get(rootMenuName);
+  const dashboard = getModuleMenu(rootMenuName);
   let routeConfig = { routes: [] };
 
   if (!dashboard) {
