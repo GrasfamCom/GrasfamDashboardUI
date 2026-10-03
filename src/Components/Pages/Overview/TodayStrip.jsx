@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import { API_URL } from '../../../config/envConfig';
 import { useTranslation } from '../../../i18n/context';
 import { findPath, firstLeaf, menuLabel } from './menuUtils';
+import TodayClasses from './TodayClasses';
 
 // "Today": the numbers a school admin opens the dashboard for. They come from one call
 // (dashboard/overview), counts only. Each card is `ok`, `unavailable` (shown as a dash)
@@ -27,11 +28,17 @@ const StatCard = ({ label, value, sub, color, link }) => (
   </div>
 );
 
+const SKELETON_CARD = 'h-28 animate-pulse rounded-2xl bg-white/70 ring-1 ring-slate-900/5';
+
+// The last block stands in for the "Roll call by class" panel, so the page does not jump when it draws.
 const Skeleton = () => (
-  <div className="mt-6 grid grid-cols-2 gap-4 xl:grid-cols-4" aria-busy="true">
-    {[0, 1, 2, 3].map((key) => (
-      <div key={key} className="h-28 animate-pulse rounded-2xl bg-white/70 ring-1 ring-slate-900/5" />
-    ))}
+  <div className="mt-6" aria-busy="true">
+    <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+      {[0, 1, 2, 3].map((key) => (
+        <div key={key} className={SKELETON_CARD} />
+      ))}
+    </div>
+    <div className={`mt-4 ${SKELETON_CARD}`} />
   </div>
 );
 
@@ -127,6 +134,7 @@ const TodayStrip = ({ menu, onNavigate }) => {
 
   const cards = [];
   let unavailable = false;
+  let classes = null;
 
   if (data.Scope === 'company') {
     const { Learners: learners, Absent: absent, Seats: seats } = data;
@@ -167,6 +175,9 @@ const TodayStrip = ({ menu, onNavigate }) => {
           link={ok ? rollCallLink(done) : null}
         />,
       );
+      if (ok && absent.ClassesTotal > 0) {
+        classes = <TodayClasses absent={absent} link={linkTo(['Attendance', 'RollCall'])} />;
+      }
     }
     if (seats.Status !== 'hidden') {
       const ok = seats.Status === 'ok';
@@ -187,12 +198,19 @@ const TodayStrip = ({ menu, onNavigate }) => {
     const home = data.Homeroom;
     const ok = home?.Status === 'ok';
     unavailable ||= !ok;
+    let rollCall = t('overview.rollCallNotTaken');
+    if (ok && home.RollCallTaken) {
+      // An older Dashboard API sends no day counts: keep the plain "taken" text then.
+      rollCall = home.Present === undefined
+        ? t('overview.rollCallTaken')
+        : t('overview.dayBreakdown', { present: home.Present, sick: home.Sick ?? 0, excused: home.Excused ?? 0, unexcused: home.Unexcused ?? 0 });
+    }
     cards.push(
       <StatCard
         key="myClass"
         label={t('overview.myClass')}
         value={ok ? home.ClassName : DASH}
-        sub={ok ? `${t(home.Learners === 1 ? 'overview.classLearnerOne' : 'overview.classLearners', { n: home.Learners })} · ${t(home.RollCallTaken ? 'overview.rollCallTaken' : 'overview.rollCallNotTaken')}` : null}
+        sub={ok ? `${t(home.Learners === 1 ? 'overview.classLearnerOne' : 'overview.classLearners', { n: home.Learners })} · ${rollCall}` : null}
         color={COLORS.myClass}
         link={ok ? rollCallLink(home.RollCallTaken) : null}
       />,
@@ -212,6 +230,7 @@ const TodayStrip = ({ menu, onNavigate }) => {
         {t('overview.today')} · <span className="font-normal normal-case">{date}</span>
       </h3>
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">{cards}</div>
+      {classes}
       {unavailable && errorRow}
     </>
   );
