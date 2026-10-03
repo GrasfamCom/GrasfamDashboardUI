@@ -13,6 +13,11 @@ const __dirname = path.dirname(__filename);
 export default [
   { ignores: ['dist'] },
   {
+    // Build tooling runs in Node, not in the browser.
+    files: ['*.config.{js,cjs,mjs}', 'ws-server.js'],
+    languageOptions: { globals: globals.node },
+  },
+  {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2022,
@@ -26,6 +31,8 @@ export default [
     settings: {
       react: { version: 'detect' },
       "import/resolver": {
+        // Understands package "exports" (some tooling packages only expose "import").
+        typescript: {},
         node: {
           extensions: [".js", ".jsx", ".ts", ".tsx"],
         },
