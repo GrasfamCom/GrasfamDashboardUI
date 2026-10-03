@@ -26,7 +26,13 @@ const RECENT_KEY = 'mobileRecent';
 
 const moduleColor = (path) => MODULE_COLORS[path.split('/').filter(Boolean)[0]] || '#0ea5e9';
 const tint = (hex) => `${hex}1f`;
-const initials = (text) => text.split(/\s+/).slice(0, 2).map((word) => word[0]).join('').toUpperCase();
+// "Quiz" -> "Qu", "Subscription Group" -> "SG": two letters, as in the design.
+const initials = (text) => {
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length > 1) return words.slice(0, 2).map((word) => word[0]).join('').toUpperCase();
+  const [first = '', second = ''] = Array.from(words[0] || '');
+  return first.toUpperCase() + second.toLowerCase();
+};
 
 const readRecent = () => {
   try {
@@ -141,7 +147,7 @@ const Overview = () => {
       )}
 
       <h3 className="mt-6 mb-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('overview.modules')}</h3>
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
         {modules.map((node) => {
           const color = moduleColor(node.path);
           return (
