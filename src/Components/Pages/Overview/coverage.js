@@ -28,7 +28,9 @@ export const loadCoveredModules = async () => {
     const codes = (profile?.modules || []).filter((code) => !NOT_A_PRODUCT.includes(code));
     const answers = await Promise.allSettled(codes.map((code) => get(`/api/v1/host/Subscription/access/${code.toLowerCase()}`)));
     return codes.filter((code, index) => {
-      const access = answers[index].status === 'fulfilled' ? answers[index].value : null;
+      // The access answer is wrapped: { data: { HasAccess, Source, ... } }.
+      const body = answers[index].status === 'fulfilled' ? answers[index].value : null;
+      const access = body?.data ?? body;
       return access?.HasAccess && access?.Source === 'Company';
     });
   } catch {
