@@ -2,6 +2,7 @@
   "overview.title": "Ringkasan Dasbor",
   "overview.subscription": "Langganan",
   "overview.noSubscription": "Belum ada paket aktif",
+  "overview.coveredByCompany": "Ditanggung perusahaan Anda",
   "overview.renews": "Diperpanjang {{date}}",
   "overview.manage": "Kelola",
   "overview.modules": "Modul",

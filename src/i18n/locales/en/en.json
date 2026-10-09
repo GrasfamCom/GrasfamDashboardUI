@@ -2,6 +2,7 @@
   "overview.title": "Dashboard Overview",
   "overview.subscription": "Subscription",
   "overview.noSubscription": "No active plan",
+  "overview.coveredByCompany": "Covered by your company",
   "overview.renews": "Renews {{date}}",
   "overview.manage": "Manage",
   "overview.modules": "Modules",

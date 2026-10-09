@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Cookies from 'js-cookie';
 import { API_URL } from '../../../config/envConfig';
 import { useTranslation } from '../../../i18n/context';
+import { loadCoveredModules } from './coverage';
 import FirstWeekChecklist from './FirstWeekChecklist';
 import TodayStrip from './TodayStrip';
 import { firstLeaf, formatDay, menuLabel } from './menuUtils';
@@ -76,6 +77,8 @@ const navigate = (path) => {
 const Overview = () => {
   const { t, lang } = useTranslation();
   const [subscriptions, setSubscriptions] = useState(null);
+  // Modules a company plan covers for a person with no plan of their own (as on the phone home).
+  const [covered, setCovered] = useState([]);
   // Read once per page load; the checklist and the strip depend on it staying the same object.
   const fullMenu = useMemo(readMenuTree, []);
   const modules = fullMenu.filter((node) => !HIDDEN.includes(node.name));
@@ -100,6 +103,18 @@ const Overview = () => {
     return () => controller.abort();
   }, [signedIn]);
 
+  const hasOwnPlan = subscriptions === null || subscriptions.length > 0;
+  useEffect(() => {
+    if (!signedIn || hasOwnPlan) return undefined;
+    let cancelled = false;
+    loadCoveredModules().then((codes) => {
+      if (!cancelled) setCovered(codes);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [signedIn, hasOwnPlan]);
+
   const moduleLabel = (node) => menuLabel(t, node);
   const endDate = (s) =>
     s.EndDate && !s.IsLifetime && !s.EndDate.startsWith('9999') ? formatDay(s.EndDate, lang) : null;
@@ -111,6 +126,14 @@ const Overview = () => {
           <p className="text-xs uppercase tracking-wide opacity-80">{t('overview.subscription')}</p>
           {subscriptions === null ? (
             <p className="mt-1 h-6 w-48 rounded bg-white/30 animate-pulse" />
+          ) : subscriptions.length === 0 && covered.length > 0 ? (
+            <ul className="mt-1 space-y-1">
+              {covered.map((code) => (
+                <li key={code} className="text-lg font-bold">
+                  {menuLabel(t, { name: code, label: code })} · <span className="font-medium">{t('overview.coveredByCompany')}</span>
+                </li>
+              ))}
+            </ul>
           ) : subscriptions.length === 0 ? (
             <p className="text-lg font-bold">{t('overview.noSubscription')}</p>
           ) : (
