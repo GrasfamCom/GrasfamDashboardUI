@@ -1,8 +1,8 @@
-// Run with: node --test --experimental-test-coverage src/Components/Pages/Overview/setupChecklist.test.mjs
+// Run with: node --test --experimental-test-coverage src/Components/Pages/Overview/setupRules.test.mjs
 // Plan: docs/product/plans/2026-10-10-admin-setup-checklist.md (acceptance criteria 3-7, 8, D3, D4, D5).
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildSteps, hiddenKey, isHidden, progress, setHidden, shouldShow } from './setupChecklist.js';
+import { buildSteps, hiddenKey, isHidden, progress, setHidden, shouldShow } from './setupRules.js';
 
 const facts = (over = {}) => ({ Schools: 0, Classes: 0, Learners: 0, RollCalls: 0, ParentLinks: null, ...over });
 const keys = (steps) => steps.map((s) => s.key);

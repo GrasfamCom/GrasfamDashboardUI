@@ -4,7 +4,7 @@ import { API_URL } from '../../../config/envConfig';
 import { useTranslation } from '../../../i18n/context';
 import { loadCoveredModules } from './coverage';
 import { isAllFree } from './accessSplit';
-import FirstWeekChecklist from './FirstWeekChecklist';
+import SetupChecklist from './SetupChecklist';
 import TodayStrip from './TodayStrip';
 import { firstLeaf, formatDay, menuLabel } from './menuUtils';
 
@@ -228,7 +228,7 @@ const Overview = () => {
     <div className="relative">
       <h6 className="text-2xl font-semibold">{t('overview.title')}</h6>
 
-      {signedIn && <FirstWeekChecklist menu={fullMenu} onNavigate={navigate} firstLeaf={firstLeaf} />}
+      {signedIn && <SetupChecklist menu={fullMenu} onNavigate={navigate} firstLeaf={firstLeaf} />}
       {signedIn && hasSchoolModules && <TodayStrip menu={fullMenu} onNavigate={navigate} />}
 
       {hasSchoolModules ? (
