@@ -92,5 +92,7 @@
   "checklist.doneTitle": "Your school is set up",
   "checklist.doneBody": "School, classes, learners, a roll call and a parent link: all done.",
   "checklist.loadFailed": "Setup progress could not load",
-  "checklist.loadFailedBody": "Nothing has changed. The rest of the page works."
+  "checklist.loadFailedBody": "Nothing has changed. The rest of the page works.",
+  "checklist.evidence.classesOne": "1 class",
+  "checklist.evidence.learnersOne": "1 learner"
 }

@@ -2,7 +2,7 @@
 // Plan: docs/product/plans/2026-10-10-admin-setup-checklist.md (acceptance criteria 3-7, 8, D3, D4, D5).
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildSteps, hiddenKey, isHidden, progress, setHidden, shouldShow } from './setupRules.js';
+import { buildSteps, evidenceOf, hiddenKey, isHidden, progress, setHidden, shouldShow } from './setupRules.js';
 
 const facts = (over = {}) => ({ Schools: 0, Classes: 0, Learners: 0, RollCalls: 0, ParentLinks: null, ...over });
 const keys = (steps) => steps.map((s) => s.key);
@@ -116,4 +116,16 @@ test('a null count (module not in the plan) leaves that step out', () => {
   assert.deepEqual(keys(noAttendance), ['school', 'classes', 'learners', 'parentLink']);
   assert.deepEqual(buildSteps({ Schools: null, Classes: null, Learners: null, RollCalls: null, ParentLinks: null }), []);
   assert.deepEqual(buildSteps(undefined), []);
+});
+
+test('evidence note: only done classes / learners steps, singular for exactly 1', () => {
+  const done = (key) => ({ key, done: true });
+  assert.deepEqual(evidenceOf(done('classes'), { Classes: 1 }), { name: 'classes', n: 1, one: true });
+  assert.deepEqual(evidenceOf(done('classes'), { Classes: 2 }), { name: 'classes', n: 2, one: false });
+  assert.deepEqual(evidenceOf(done('learners'), { Learners: 1 }), { name: 'learners', n: 1, one: true });
+  assert.deepEqual(evidenceOf(done('learners'), { Learners: 30 }), { name: 'learners', n: 30, one: false });
+  assert.equal(evidenceOf({ key: 'classes', done: false }, { Classes: 2 }), null);
+  assert.equal(evidenceOf(done('school'), { Schools: 1 }), null);
+  assert.equal(evidenceOf(done('classes'), { Classes: null }), null);
+  assert.equal(evidenceOf(done('classes'), undefined), null);
 });

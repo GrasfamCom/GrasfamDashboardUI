@@ -37,6 +37,15 @@ export const buildSteps = (facts) => {
   });
 };
 
+/** The "2 classes" note on a done step: { name, n, one } or null. `one` picks the singular wording. */
+export const evidenceOf = (step, facts) => {
+  if (!step.done) return null;
+  const name = step.key === 'classes' ? 'classes' : step.key === 'learners' ? 'learners' : null;
+  if (!name) return null;
+  const n = facts?.[name === 'classes' ? 'Classes' : 'Learners'];
+  return Number.isFinite(n) ? { name, n, one: n === 1 } : null;
+};
+
 export const progress = (steps) => {
   const open = steps.filter((step) => !step.done);
   return {

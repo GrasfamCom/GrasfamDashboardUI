@@ -1,4 +1,5 @@
 import { useTranslation } from '../../../i18n/context';
+import { evidenceOf } from './setupRules';
 
 // The pieces of the "Set up your school" card that only draw. State and data live in SetupChecklist.jsx.
 
@@ -85,10 +86,8 @@ export const SetupDone = ({ onHide }) => {
 const Row = ({ step, active, node, facts, onOpen }) => {
   const { t } = useTranslation();
   const text = STEP_TEXT[step.key];
-  const evidence =
-    step.done && step.key === 'classes' ? t('checklist.evidence.classes', { n: facts.Classes })
-      : step.done && step.key === 'learners' ? t('checklist.evidence.learners', { n: facts.Learners })
-        : null;
+  const note = evidenceOf(step, facts);
+  const evidence = note && t(`checklist.evidence.${note.name}${note.one ? 'One' : ''}`, { n: note.n });
   const buttonKey = step.key === 'school' ? 'checklist.school.self' : `checklist.step.${text}.btn`;
   return (
     <li className={`flex flex-wrap items-start gap-x-3 gap-y-2 rounded-xl p-2 sm:flex-nowrap ${active ? 'bg-sky-50' : ''}`}>

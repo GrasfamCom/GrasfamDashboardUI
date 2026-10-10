@@ -92,5 +92,7 @@
   "checklist.doneTitle": "Sekolah Anda sudah siap",
   "checklist.doneBody": "Sekolah, kelas, siswa, absensi dan tautan orang tua: semuanya selesai.",
   "checklist.loadFailed": "Kemajuan penyiapan tidak bisa dimuat",
-  "checklist.loadFailedBody": "Tidak ada yang berubah. Bagian halaman lain berfungsi."
+  "checklist.loadFailedBody": "Tidak ada yang berubah. Bagian halaman lain berfungsi.",
+  "checklist.evidence.classesOne": "1 kelas",
+  "checklist.evidence.learnersOne": "1 siswa"
 }
