@@ -9,3 +9,6 @@ export const coveredEntries = (codes, answers) =>
     const access = body?.data ?? body;
     return access?.HasAccess && NO_OWN_PLAN_SOURCES.includes(access.Source) ? [{ code, source: access.Source }] : [];
   });
+
+// True when the person reaches modules only through the free-for-all plan (no company cover).
+export const isAllFree = (entries) => entries.length > 0 && entries.every((entry) => entry.source === 'Free');

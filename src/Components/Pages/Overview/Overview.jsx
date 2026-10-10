@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import { API_URL } from '../../../config/envConfig';
 import { useTranslation } from '../../../i18n/context';
 import { loadCoveredModules } from './coverage';
+import { isAllFree } from './accessSplit';
 import FirstWeekChecklist from './FirstWeekChecklist';
 import TodayStrip from './TodayStrip';
 import { firstLeaf, formatDay, menuLabel } from './menuUtils';
@@ -126,6 +127,8 @@ const Overview = () => {
           <p className="text-xs uppercase tracking-wide opacity-80">{t('overview.subscription')}</p>
           {subscriptions === null ? (
             <p className="mt-1 h-6 w-48 rounded bg-white/30 animate-pulse" />
+          ) : subscriptions.length === 0 && isAllFree(covered) ? (
+            <p className="mt-1 text-lg font-bold">{t('overview.allOpen')}</p>
           ) : subscriptions.length === 0 && covered.length > 0 ? (
             <ul className="mt-1 space-y-1">
               {covered.map(({ code, source }) => (
@@ -153,7 +156,7 @@ const Overview = () => {
             onClick={() => navigate(firstLeaf(subscriptionGroup))}
             className="shrink-0 bg-white/25 hover:bg-white/35 px-4 py-1.5 rounded-full text-sm font-semibold"
           >
-            {t('overview.manage')}
+            {subscriptions?.length === 0 && isAllFree(covered) ? t('overview.seePlans') : t('overview.manage')}
           </button>
         )}
       </div>

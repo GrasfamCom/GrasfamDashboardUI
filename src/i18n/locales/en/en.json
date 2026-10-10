@@ -4,6 +4,8 @@
   "overview.noSubscription": "No active plan",
   "overview.coveredByCompany": "Covered by your company",
   "overview.freeNow": "Free during our introduction period",
+  "overview.allOpen": "All modules are open to your account. You do not need to do anything.",
+  "overview.seePlans": "See plans",
   "overview.renews": "Renews {{date}}",
   "overview.manage": "Manage",
   "overview.modules": "Modules",

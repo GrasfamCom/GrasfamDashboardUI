@@ -1,7 +1,7 @@
 // Run with: node --test --experimental-test-coverage src/Components/Pages/Overview/accessSplit.test.mjs
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { coveredEntries } from './accessSplit.js';
+import { coveredEntries, isAllFree } from './accessSplit.js';
 
 const ok = (Source, HasAccess = true) => ({ status: 'fulfilled', value: { data: { HasAccess, Source } } });
 
@@ -20,4 +20,11 @@ test('an unwrapped answer works, a failed or empty one is skipped', () => {
 
 test('no codes gives an empty list', () => {
   assert.deepEqual(coveredEntries([], []), []);
+});
+
+test('all-free is true only when every entry is the free plan', () => {
+  assert.equal(isAllFree([{ code: 'A', source: 'Free' }, { code: 'B', source: 'Free' }]), true);
+  assert.equal(isAllFree([{ code: 'A', source: 'Free' }, { code: 'B', source: 'Company' }]), false);
+  assert.equal(isAllFree([{ code: 'B', source: 'Company' }]), false);
+  assert.equal(isAllFree([]), false);
 });
