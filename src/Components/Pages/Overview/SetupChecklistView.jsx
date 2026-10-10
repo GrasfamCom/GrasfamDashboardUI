@@ -51,7 +51,7 @@ export const SetupHiddenBar = ({ justHidden, onUndo, onShow }) => {
     return (
       <div role="status" className="mt-6 flex items-center justify-between gap-4 rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-700">
         <span>
-          {t('checklist.hidden')} <span className="text-gray-500">{t('checklist.hiddenHint')}</span>
+          {t('checklist.hidden')} <span className="block text-xs text-gray-600">{t('checklist.hiddenHint')}</span>
         </span>
         <button type="button" onClick={onUndo} className="shrink-0 font-semibold text-sky-700 hover:underline">
           {t('checklist.undo')}
@@ -93,12 +93,12 @@ const Row = ({ step, active, node, facts, onOpen }) => {
     <li className={`flex flex-wrap items-start gap-x-3 gap-y-2 rounded-xl p-2 sm:flex-nowrap ${active ? 'bg-sky-50' : ''}`}>
       <Tick done={step.done} />
       <div className="min-w-0 flex-1 basis-[calc(100%-2rem)] sm:basis-0">
-        <p className={`font-medium ${step.done ? 'text-gray-400 line-through' : step.blocked ? 'text-gray-400' : 'text-gray-900'}`}>
+        <p className={`font-medium ${step.done ? 'text-gray-400 line-through' : step.blocked ? 'text-gray-600' : 'text-gray-900'}`}>
           {t(`checklist.step.${text}`)}
           {evidence && <span className="ml-2 text-sm font-normal no-underline text-gray-500">{evidence}</span>}
         </p>
         {!step.done && <p className="text-sm text-gray-500">{t(`checklist.step.${text}.desc`)}</p>}
-        {step.blocked && <p className="text-sm font-medium text-gray-500">{t(REASON_KEY[step.reason])}</p>}
+        {step.blocked && <p className="text-sm font-medium text-gray-700">{t(REASON_KEY[step.reason])}</p>}
       </div>
       {showsOpenButton(step, node) && (
         <button
