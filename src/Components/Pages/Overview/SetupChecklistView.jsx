@@ -1,5 +1,5 @@
 import { useTranslation } from '../../../i18n/context';
-import { evidenceOf } from './setupRules';
+import { evidenceOf, showsOpenButton } from './setupRules';
 
 // The pieces of the "Set up your school" card that only draw. State and data live in SetupChecklist.jsx.
 
@@ -100,7 +100,7 @@ const Row = ({ step, active, node, facts, onOpen }) => {
         {!step.done && <p className="text-sm text-gray-500">{t(`checklist.step.${text}.desc`)}</p>}
         {step.blocked && <p className="text-sm font-medium text-gray-500">{t(REASON_KEY[step.reason])}</p>}
       </div>
-      {!step.done && !step.blocked && node && (
+      {showsOpenButton(step, node) && (
         <button
           type="button"
           onClick={() => onOpen(node)}

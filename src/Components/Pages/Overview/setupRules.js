@@ -46,6 +46,9 @@ export const evidenceOf = (step, facts) => {
   return Number.isFinite(n) ? { name, n, one: n === 1 } : null;
 };
 
+/** The "Open" button shows only for a step that is open, not locked, and whose page this person can reach. */
+export const showsOpenButton = (step, pageAvailable) => !step.done && !step.blocked && Boolean(pageAvailable);
+
 export const progress = (steps) => {
   const open = steps.filter((step) => !step.done);
   return {

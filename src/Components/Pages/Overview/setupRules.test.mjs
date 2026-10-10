@@ -2,7 +2,7 @@
 // Plan: docs/product/plans/2026-10-10-admin-setup-checklist.md (acceptance criteria 3-7, 8, D3, D4, D5).
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildSteps, evidenceOf, hiddenKey, isHidden, progress, setHidden, shouldShow } from './setupRules.js';
+import { buildSteps, showsOpenButton, evidenceOf, hiddenKey, isHidden, progress, setHidden, shouldShow } from './setupRules.js';
 
 const facts = (over = {}) => ({ Schools: 0, Classes: 0, Learners: 0, RollCalls: 0, ParentLinks: null, ...over });
 const keys = (steps) => steps.map((s) => s.key);
@@ -128,4 +128,15 @@ test('evidence note: only done classes / learners steps, singular for exactly 1'
   assert.equal(evidenceOf(done('school'), { Schools: 1 }), null);
   assert.equal(evidenceOf(done('classes'), { Classes: null }), null);
   assert.equal(evidenceOf(done('classes'), undefined), null);
+});
+
+test('a locked or finished step never shows an Open button', () => {
+  const steps = buildSteps({ Schools: 1, Classes: 0, Learners: 0, RollCalls: 0, ParentLinks: 0 });
+  assert.equal(showsOpenButton(byKey(steps, 'classes'), true), true);
+  assert.equal(showsOpenButton(byKey(steps, 'school'), true), false, 'done');
+  assert.equal(showsOpenButton(byKey(steps, 'learners'), true), false, 'locked until a class exists');
+  assert.equal(showsOpenButton(byKey(steps, 'rollCall'), true), false, 'locked until classes and learners exist');
+  assert.equal(showsOpenButton(byKey(steps, 'parentLink'), true), false, 'locked until learners exist');
+  assert.equal(showsOpenButton(byKey(steps, 'classes'), false), false, 'page not in the menu');
+  assert.equal(showsOpenButton(byKey(steps, 'classes'), undefined), false);
 });
