@@ -108,3 +108,12 @@ test('storage that is missing or throws never breaks the card', () => {
   assert.doesNotThrow(() => setHidden(undefined, 'u1', true));
   assert.equal(isHidden(fakeStorage(), null), false);
 });
+
+test('a null count (module not in the plan) leaves that step out', () => {
+  const noAcademic = buildSteps({ Schools: null, Classes: null, Learners: null, RollCalls: 3, ParentLinks: null });
+  assert.deepEqual(keys(noAcademic), ['rollCall']);
+  const noAttendance = buildSteps({ Schools: 1, Classes: 1, Learners: 1, RollCalls: null, ParentLinks: 0 });
+  assert.deepEqual(keys(noAttendance), ['school', 'classes', 'learners', 'parentLink']);
+  assert.deepEqual(buildSteps({ Schools: null, Classes: null, Learners: null, RollCalls: null, ParentLinks: null }), []);
+  assert.deepEqual(buildSteps(undefined), []);
+});

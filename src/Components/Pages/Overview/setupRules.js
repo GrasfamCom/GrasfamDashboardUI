@@ -23,8 +23,9 @@ const STEPS = [
   { key: 'parentLink', minutes: 1, count: 'ParentLinks', block: (f) => (has(f.Learners) ? null : 'addLearnersFirst') },
 ];
 
-// The parent-link step exists only once the API sends its count (PA1 is live).
-const included = (step, facts) => step.key !== 'parentLink' || Number.isFinite(facts?.ParentLinks);
+// A step exists only when the API sent its count. null means the company lacks that module (no Academic:
+// Schools, Classes, Learners, ParentLinks; no Attendance: RollCalls), so the step is left out.
+const included = (step, facts) => Number.isFinite(facts?.[step.count]);
 
 /** One entry per step: { key, done, minutes, blocked, reason }. A step that is done is never blocked. */
 export const buildSteps = (facts) => {

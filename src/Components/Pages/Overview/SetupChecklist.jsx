@@ -81,6 +81,7 @@ const SetupChecklist = ({ menu, onNavigate, firstLeaf }) => {
 
   if (state.status === 'loading') return <SetupSkeleton />;
   if (state.status === 'none') return null;
+  if (state.status === 'ok' && steps.length === 0) return null; // the company has none of the modules the steps need
   if (state.status === 'failed') return <SetupError onRetry={load} />;
   if (hidden) {
     if (summary.allDone) return null;
