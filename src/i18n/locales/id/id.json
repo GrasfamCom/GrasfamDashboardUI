@@ -65,7 +65,7 @@
   "checklist.hide": "Sembunyikan",
   "checklist.hidden": "Daftar tugas disembunyikan.",
   "checklist.undo": "Batalkan",
-  "checklist.hiddenHint": "Tetap tersembunyi di peramban ini. Gunakan \"Tampilkan daftar penyiapan\" di bagian bawah halaman ini untuk memunculkannya lagi selama penyiapan belum selesai.",
+  "checklist.hiddenHint": "Tetap tersembunyi di browser ini. Gunakan \"Tampilkan daftar penyiapan\" di bagian bawah halaman ini untuk memunculkannya lagi selama penyiapan belum selesai.",
   "checklist.show": "Tampilkan daftar penyiapan",
   "checklist.step.school": "Tambah sekolah Anda",
   "checklist.step.school.desc": "Kehadiran dan kelas dicatat per sekolah.",
