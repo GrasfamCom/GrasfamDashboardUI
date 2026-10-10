@@ -3,6 +3,7 @@
   "overview.subscription": "Subscription",
   "overview.noSubscription": "No active plan",
   "overview.coveredByCompany": "Covered by your company",
+  "overview.freeNow": "Free during our introduction period",
   "overview.renews": "Renews {{date}}",
   "overview.manage": "Manage",
   "overview.modules": "Modules",

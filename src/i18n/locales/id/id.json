@@ -3,6 +3,7 @@
   "overview.subscription": "Langganan",
   "overview.noSubscription": "Belum ada paket aktif",
   "overview.coveredByCompany": "Ditanggung perusahaan Anda",
+  "overview.freeNow": "Gratis selama masa perkenalan",
   "overview.renews": "Diperpanjang {{date}}",
   "overview.manage": "Kelola",
   "overview.modules": "Modul",

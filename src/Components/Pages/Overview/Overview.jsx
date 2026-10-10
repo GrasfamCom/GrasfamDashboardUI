@@ -107,8 +107,8 @@ const Overview = () => {
   useEffect(() => {
     if (!signedIn || hasOwnPlan) return undefined;
     let cancelled = false;
-    loadCoveredModules().then((codes) => {
-      if (!cancelled) setCovered(codes);
+    loadCoveredModules().then((entries) => {
+      if (!cancelled) setCovered(entries);
     });
     return () => {
       cancelled = true;
@@ -128,9 +128,9 @@ const Overview = () => {
             <p className="mt-1 h-6 w-48 rounded bg-white/30 animate-pulse" />
           ) : subscriptions.length === 0 && covered.length > 0 ? (
             <ul className="mt-1 space-y-1">
-              {covered.map((code) => (
+              {covered.map(({ code, source }) => (
                 <li key={code} className="text-lg font-bold">
-                  {menuLabel(t, { name: code, label: code })} · <span className="font-medium">{t('overview.coveredByCompany')}</span>
+                  {menuLabel(t, { name: code, label: code })} · <span className="font-medium">{t(source === 'Free' ? 'overview.freeNow' : 'overview.coveredByCompany')}</span>
                 </li>
               ))}
             </ul>
