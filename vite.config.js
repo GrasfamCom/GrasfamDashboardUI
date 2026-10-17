@@ -69,7 +69,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: false,
       rollupOptions: {
         output: {
-          assetFileNames: "assets/[name].[ext]",
+          assetFileNames: "assets/[name]-[hash].[ext]",
           format: 'es',
           compact: true,
           dynamicImportInCjs: true,
