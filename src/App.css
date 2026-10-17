@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Scope root for tailwind `important: ".r-dashboard"`; it adds no layout box of its own. */
+.r-dashboard {
+  display: contents;
+}
+
 #root {
   overflow: hidden;
 }

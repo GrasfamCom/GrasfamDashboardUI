@@ -4,9 +4,11 @@ import { I18nProvider } from './i18n';
 
 const App = () => {
   return (
-    <I18nProvider>
-      <AppRoutes />
-    </I18nProvider>
+    <div className="r-dashboard">
+      <I18nProvider>
+        <AppRoutes />
+      </I18nProvider>
+    </div>
   );
 };
 
