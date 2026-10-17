@@ -26,8 +26,11 @@ test("the root adds no layout box", () => {
   assert.match(css, /\.r-dashboard\s*\{\s*display:\s*contents;?\s*\}/);
 });
 
-test("the global '#root { overflow: hidden }' rule is kept as it was (not part of this change)", () => {
-  assert.match(css, /#root\s*\{\s*overflow:\s*hidden;?\s*\}/);
+// The host's own App.css has the same `#root { overflow: hidden }` rule, so inside the host nothing changes; a remote running
+// alone (main.jsx sets data-standalone on its root) keeps the rule through the attribute.
+test("'#root { overflow: hidden }' only applies to the standalone root, so it cannot touch another app's #root", () => {
+  assert.match(css, /#root\[data-standalone\]\s*\{\s*overflow:\s*hidden;?\s*\}/);
+  assert.doesNotMatch(css, /(^|\n)#root\s*\{/);
 });
 
 function sources(dir) {
@@ -45,4 +48,15 @@ test("nothing portals outside the root (portal list for Dashboard: none)", () =>
     .map((p) => readFileSync(p, "utf8"))
     .join("\n");
   assert.doesNotMatch(text, /createPortal|menuPortalTarget|document\.body\.(appendChild|append|insertBefore)/);
+});
+
+// CSS collision follow-up (CEO 1213): Tailwind's `.container` component class is not wrapped by the `important` scope, so
+// it leaks to every other remote. This remote never uses it, so the plugin is switched off.
+test("tailwind's container plugin is off", () => {
+  assert.match(config, /corePlugins:\s*\{\s*container:\s*false\s*\}/);
+});
+
+test("no markup uses the Tailwind container class (so switching the plugin off changes no pixels)", () => {
+  const text = sources(fileURLToPath(new URL(".", import.meta.url))).map((p) => readFileSync(p, "utf8")).join("\n");
+  assert.doesNotMatch(text, /(className|class)\s*=\s*[{"'`][^>]*?(?<![\w-])!?container(?![\w-])/);
 });
